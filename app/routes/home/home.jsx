@@ -12,13 +12,12 @@ import sprTexturePlaceholder from '~/assets/spr-lesson-builder-dark-placeholder.
 import sprTexture from '~/assets/spr-lesson-builder-dark.jpg';
 import { Footer } from '~/components/footer';
 import { baseMeta } from '~/utils/meta';
-import { Intro } from './intro';
 import { Profile } from './profile';
 import { ProjectSummary } from './project-summary';
 import { useEffect, useRef, useState } from 'react';
 import config from '~/config.json';
 import styles from './home.module.css';
-
+import { HeroSection } from './heroSection';
 // Prefetch draco decoader wasm
 export const links = () => {
   return [
@@ -49,14 +48,13 @@ export const meta = () => {
 export const Home = () => {
   const [visibleSections, setVisibleSections] = useState([]);
   const [scrollIndicatorHidden, setScrollIndicatorHidden] = useState(false);
-  const intro = useRef();
   const projectOne = useRef();
   const projectTwo = useRef();
   const projectThree = useRef();
   const details = useRef();
 
   useEffect(() => {
-    const sections = [intro, projectOne, projectTwo, projectThree, details];
+    const sections = [projectOne, projectTwo, projectThree, details];
 
     const sectionObserver = new IntersectionObserver(
       (entries, observer) => {
@@ -72,32 +70,20 @@ export const Home = () => {
       { rootMargin: '0px 0px -10% 0px', threshold: 0.1 }
     );
 
-    const indicatorObserver = new IntersectionObserver(
-      ([entry]) => {
-        setScrollIndicatorHidden(!entry.isIntersecting);
-      },
-      { rootMargin: '-100% 0px 0px 0px' }
-    );
-
     sections.forEach(section => {
       sectionObserver.observe(section.current);
     });
 
-    indicatorObserver.observe(intro.current);
-
     return () => {
       sectionObserver.disconnect();
-      indicatorObserver.disconnect();
     };
   }, [visibleSections]);
 
   return (
     <div className={styles.home}>
-      <Intro
-        id="intro"
-        sectionRef={intro}
-        scrollIndicatorHidden={scrollIndicatorHidden}
-      />
+      {/* Your Custom Section */}
+      <HeroSection/>
+
       <ProjectSummary
         id="project-1"
         sectionRef={projectOne}

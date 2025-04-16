@@ -12,8 +12,9 @@ import { ThemeToggle } from './theme-toggle';
 import { navLinks, socialLinks } from './nav-data';
 import config from '~/config.json';
 import styles from './navbar.module.css';
-
+import { Image } from '~/components/image';
 export const Navbar = () => {
+  const [logo, setLogo] = useState("'/logoDC.png'");
   const [current, setCurrent] = useState();
   const [menuOpen, setMenuOpen] = useState(false);
   const [target, setTarget] = useState();
@@ -23,7 +24,18 @@ export const Navbar = () => {
   const headerRef = useRef();
   const isMobile = windowSize.width <= media.mobile || windowSize.height <= 696;
   const scrollToHash = useScrollToHash();
-
+  useEffect(() => {
+    if (theme === 'dark') {
+      setLogo("/logoDCW.png");
+      // console.log('dark mode');
+      // do something when dark mode is enabled
+    } else {
+      // console.log('light mode');
+      
+      setLogo("/logoDC.png");
+      // do something when light mode is enabled
+    }
+  }, [theme]);
   useEffect(() => {
     // Prevent ssr mismatch by storing this in state
     setCurrent(`${location.pathname}${location.hash}`);
@@ -140,67 +152,75 @@ export const Navbar = () => {
   };
 
   return (
-    <header className={styles.navbar} ref={headerRef}>
-      <RouterLink
-        unstable_viewTransition
-        prefetch="intent"
-        to={location.pathname === '/' ? '/#intro' : '/'}
-        data-navbar-item
-        className={styles.logo}
-        aria-label={`${config.name}, ${config.role}`}
-        onClick={handleMobileNavClick}
-      >
-        <Monogram highlight />
-      </RouterLink>
-      <NavToggle onClick={() => setMenuOpen(!menuOpen)} menuOpen={menuOpen} />
-      <nav className={styles.nav}>
-        <div className={styles.navList}>
-          {navLinks.map(({ label, pathname }) => (
-            <RouterLink
-              unstable_viewTransition
-              prefetch="intent"
-              to={pathname}
-              key={label}
-              data-navbar-item
-              className={styles.navLink}
-              aria-current={getCurrent(pathname)}
-              onClick={handleNavItemClick}
-            >
-              {label}
-            </RouterLink>
-          ))}
-        </div>
-        <NavbarIcons desktop />
-      </nav>
-      <Transition unmount in={menuOpen} timeout={msToNum(tokens.base.durationL)}>
-        {({ visible, nodeRef }) => (
-          <nav className={styles.mobileNav} data-visible={visible} ref={nodeRef}>
-            {navLinks.map(({ label, pathname }, index) => (
+    <div className={styles.outerNavbar}>
+      <header className={styles.navbar} ref={headerRef}>
+        <RouterLink
+          unstable_viewTransition
+          prefetch="intent"
+          to={location.pathname === '/' ? '/#intro' : '/'}
+          data-navbar-item
+          className={styles.logo}
+          aria-label={`${config.name}, ${config.role}`}
+          onClick={handleMobileNavClick}
+        >
+          {/* <Monogram highlight /> */}
+          <Image
+            src={logo}
+            alt="Logo"
+            className={styles.logoImage}
+            priority="true"
+          />
+        </RouterLink>
+        <NavToggle onClick={() => setMenuOpen(!menuOpen)} menuOpen={menuOpen} />
+        <nav className={styles.nav}>
+          <div className={styles.navList}>
+            {navLinks.map(({ label, pathname }) => (
               <RouterLink
                 unstable_viewTransition
                 prefetch="intent"
                 to={pathname}
                 key={label}
-                className={styles.mobileNavLink}
-                data-visible={visible}
+                data-navbar-item
+                className={styles.navLink}
                 aria-current={getCurrent(pathname)}
-                onClick={handleMobileNavClick}
-                style={cssProps({
-                  transitionDelay: numToMs(
-                    Number(msToNum(tokens.base.durationS)) + index * 50
-                  ),
-                })}
+                onClick={handleNavItemClick}
               >
                 {label}
               </RouterLink>
             ))}
-            <NavbarIcons />
-            <ThemeToggle isMobile />
-          </nav>
-        )}
-      </Transition>
-      {!isMobile && <ThemeToggle data-navbar-item />}
-    </header>
+          </div>
+          <NavbarIcons desktop />
+        </nav>
+        <Transition unmount in={menuOpen} timeout={msToNum(tokens.base.durationL)}>
+          {({ visible, nodeRef }) => (
+            <nav className={styles.mobileNav} data-visible={visible} ref={nodeRef}>
+              {navLinks.map(({ label, pathname }, index) => (
+                <RouterLink
+                  unstable_viewTransition
+                  prefetch="intent"
+                  to={pathname}
+                  key={label}
+                  className={styles.mobileNavLink}
+                  data-visible={visible}
+                  aria-current={getCurrent(pathname)}
+                  onClick={handleMobileNavClick}
+                  style={cssProps({
+                    transitionDelay: numToMs(
+                      Number(msToNum(tokens.base.durationS)) + index * 50
+                    ),
+                  })}
+                >
+                  {label}
+                </RouterLink>
+              ))}
+              <NavbarIcons />
+              <ThemeToggle isMobile />
+            </nav>
+          )}
+        </Transition>
+        {!isMobile && <ThemeToggle data-navbar-item />}
+      </header>
+    </div>
   );
 };
 

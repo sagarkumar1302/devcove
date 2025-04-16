@@ -4,13 +4,18 @@
     --inset: calc(var(--spaceOuter) - var(--offset));
 
     position: fixed;
-    top: var(--inset);
+    top: 20px;
     right: var(--inset);
     z-index: var(--zIndex4);
     display: none;
 
-    @media (--mediaMobile), (--mediaMobileLS) {
+    @media screen and (max-width: 768px) {
       display: flex;
+      position: static;
+      --offset: none;
+    --inset: none;
+    justify-content: center;
+    align-items: center;
     }
   }
 
