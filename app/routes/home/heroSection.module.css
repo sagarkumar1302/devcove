@@ -18,6 +18,18 @@
   justify-content: center;
   align-items: center;
   z-index: 1;
+  -webkit-animation: scaleDownIn 1.5s cubic-bezier(.87,0,.13,1);
+  animation: scaleDownIn 1.5s cubic-bezier(0.87, 0, 0.13, 1);
+}
+@keyframes scaleDownIn {
+  0% {
+    opacity: 0;
+    transform: scale(4) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 .herop {
   font-size: 1.75rem;
@@ -48,7 +60,7 @@
   align-items: center;
   line-height: 40px;
   font-size: 18px;
-  color : var(--btncolor);
+  color: var(--btncolor);
   font-family: sans-serif;
   text-decoration: none;
   border-radius: 7px;
