@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from 'react';
 import gamestackTexture2Large from '~/assets/gamestack-list-large.jpg';
 import gamestackTexture2Placeholder from '~/assets/gamestack-list-placeholder.jpg';
 import gamestackTexture2 from '~/assets/gamestack-list.jpg';
@@ -15,11 +14,11 @@ import { Footer } from '~/components/footer';
 import { baseMeta } from '~/utils/meta';
 import { Profile } from './profile';
 import { ProjectSummary } from './project-summary';
-import { HeroSection } from './heroSection';
-import styles from './home.module.css';
+import { useEffect, useRef, useState } from 'react';
 import config from '~/config.json';
-
-// Prefetch draco decoder wasm
+import styles from './home.module.css';
+import { HeroSection } from './heroSection';
+// Prefetch draco decoader wasm
 export const links = () => {
   return [
     {
@@ -50,7 +49,7 @@ export const meta = () => {
 
 export const Home = () => {
   const [visibleSections, setVisibleSections] = useState([]);
-  const visibleSectionsRef = useRef([]);
+  const [scrollIndicatorHidden, setScrollIndicatorHidden] = useState(false);
   const projectOne = useRef();
   const projectTwo = useRef();
   const projectThree = useRef();
@@ -65,11 +64,8 @@ export const Home = () => {
           if (entry.isIntersecting) {
             const section = entry.target;
             observer.unobserve(section);
-
-            if (visibleSectionsRef.current.includes(section)) return;
-
-            visibleSectionsRef.current.push(section);
-            setVisibleSections([...visibleSectionsRef.current]);
+            if (visibleSections.includes(section)) return;
+            setVisibleSections(prevSections => [...prevSections, section]);
           }
         });
       },
@@ -77,19 +73,18 @@ export const Home = () => {
     );
 
     sections.forEach(section => {
-      if (section.current) {
-        sectionObserver.observe(section.current);
-      }
+      sectionObserver.observe(section.current);
     });
 
     return () => {
       sectionObserver.disconnect();
     };
-  }, []);
+  }, [visibleSections]);
 
   return (
     <div className={styles.home}>
-      <HeroSection />
+      {/* Your Custom Section */}
+      <HeroSection/>
 
       <ProjectSummary
         id="project-1"
@@ -111,7 +106,6 @@ export const Home = () => {
           ],
         }}
       />
-
       <ProjectSummary
         id="project-2"
         alternate
@@ -137,7 +131,6 @@ export const Home = () => {
           ],
         }}
       />
-
       <ProjectSummary
         id="project-3"
         sectionRef={projectThree}
@@ -158,13 +151,11 @@ export const Home = () => {
           ],
         }}
       />
-
       <Profile
         sectionRef={details}
         visible={visibleSections.includes(details.current)}
         id="details"
       />
-
       <Footer />
     </div>
   );
